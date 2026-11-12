@@ -1,4 +1,4 @@
-/* 莊柏軒個人網站：手機選單、導覽列霧化、區塊淡入淡出 */
+/* 莊柏軒個人網站：手機選單、導覽列霧化、作品集分頁、區塊淡入淡出 */
 (function () {
   var head = document.querySelector('.glass');
   function onScroll() {
@@ -24,6 +24,33 @@
       }
     });
   }
+
+
+  // 作品集分頁（桌面與平板）；手機版由 CSS 直接展開全部分類
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab[data-tab]'));
+  function selectTab(id, focus) {
+    tabs.forEach(function (b) {
+      var on = b.getAttribute('data-tab') === id;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.setAttribute('tabindex', on ? '0' : '-1');
+      if (on && focus) b.focus();
+    });
+    document.querySelectorAll('.tabpanel[data-panel]').forEach(function (p) {
+      p.classList.toggle('on', p.getAttribute('data-panel') === id);
+    });
+  }
+  tabs.forEach(function (b, i) {
+    b.setAttribute('tabindex', b.classList.contains('on') ? '0' : '-1');
+    b.addEventListener('click', function () { selectTab(b.getAttribute('data-tab')); });
+    b.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var n = tabs[(i + d + tabs.length) % tabs.length];
+      selectTab(n.getAttribute('data-tab'), true);
+    });
+  });
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
   var io = new IntersectionObserver(function (entries) {
