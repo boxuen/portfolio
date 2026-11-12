@@ -55,7 +55,7 @@
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) { en.target.classList.toggle('out', !en.isIntersecting); });
-  }, { threshold: 0.12 });
+  }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
   document.querySelectorAll('.fd').forEach(function (el) {
     if (el.getBoundingClientRect().top > window.innerHeight) el.classList.add('out');
     io.observe(el);
