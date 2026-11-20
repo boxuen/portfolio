@@ -101,3 +101,36 @@
     });
   });
 })();
+
+/* 整套作品：一個按鈕開啟多張，左右切換 */
+(function () {
+  var d = document.querySelector('.lbs');
+  if (!d || typeof d.showModal !== 'function') return;
+  var img = d.querySelector('img'), cap = d.querySelector('.lbs-cap'), num = d.querySelector('.lbs-n');
+  var list = [], i = 0;
+  function show(n) {
+    i = (n + list.length) % list.length;
+    img.src = list[i][0]; img.alt = list[i][1];
+    cap.textContent = list[i][1]; num.textContent = (i + 1) + ' / ' + list.length;
+  }
+  document.querySelectorAll('.gset[data-set]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      list = b.getAttribute('data-set').split('|').map(function (x) { return x.split('::'); });
+      show(0); d.showModal();
+    });
+  });
+  d.querySelector('.lbs-prev').addEventListener('click', function () { show(i - 1); });
+  d.querySelector('.lbs-next').addEventListener('click', function () { show(i + 1); });
+  d.querySelector('.lb-close').addEventListener('click', function () { d.close(); });
+  d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+  d.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+  var x0 = null;
+  d.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  d.addEventListener('touchend', function (e) {
+    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+  });
+})();
